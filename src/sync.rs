@@ -22,6 +22,14 @@ use std::sync::RwLock;
 
 /// Append-only threadsafe version of `std::collections::HashMap` where
 /// insertion does not require mutable access
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    serde(
+        bound = "K: serde::Serialize + serde::de::DeserializeOwned + Eq + Hash,\
+		 V: serde::Serialize + serde::de::DeserializeOwned"
+    )
+)]
 pub struct FrozenMap<K, V> {
     map: RwLock<HashMap<K, V>>,
 }
@@ -355,6 +363,11 @@ impl<K, V> std::convert::AsMut<HashMap<K, V>> for FrozenMap<K, V> {
 
 /// Append-only threadsafe version of `std::vec::Vec` where
 /// insertion does not require mutable access
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    serde(bound = "T: serde::Serialize + serde::de::DeserializeOwned")
+)]
 pub struct FrozenVec<T> {
     vec: RwLock<Vec<T>>,
 }
@@ -623,6 +636,12 @@ fn test_non_lockfree() {
 /// Append-only threadsafe version of `std::collections::BTreeMap` where
 /// insertion does not require mutable access
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    serde(bound = "K: serde::Serialize + serde::de::DeserializeOwned + Ord,\
+		 V: serde::Serialize + serde::de::DeserializeOwned")
+)]
 pub struct FrozenBTreeMap<K, V>(RwLock<BTreeMap<K, V>>);
 
 impl<K: Clone + Ord, V: StableDeref> FrozenBTreeMap<K, V> {
